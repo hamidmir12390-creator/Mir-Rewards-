@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mir Rewards Pro</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #f0f2f5; margin: 0; padding: 20px; }
+        .page { display: none; padding: 20px; }
+        .active { display: block; }
+        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); margin-top: 20px; }
+        .btn { padding: 15px; width: 100%; border-radius: 12px; border: none; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        .btn-google { background: white; border: 1px solid #ddd; color: #555; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-ad { background: #00c853; color: white; margin-top: 20px; }
+        .btn-logout { background: #ff5252; color: white; margin-top: 30px; width: auto; padding: 10px 20px; }
+        h1 { color: #333; }
+        #coins { font-size: 48px; color: #ffa000; }
+    </style>
+</head>
+<body>
+
+    <div id="auth-page" class="page active">
+        <br><br>
+        <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" width="70">
+        <h1>Mir Rewards</h1>
+        <p>Login to start earning real rewards!</p>
+        <div class="card">
+            <button class="btn btn-google" onclick="login()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
+                Sign in with Google
+            </button>
+        </div>
+    </div>
+
+    <div id="main-app" class="page">
+        <div class="card">
+            <p>Your Total Balance</p>
+            <h1><span id="coins">0</span> 🪙</h1>
+            <button class="btn btn-ad" onclick="addCoins()">WATCH AD (+10 Coins)</button>
+        </div>
+        <button class="btn btn-logout" onclick="logout()">Logout</button>
+    </div>
+
+    <script>
+        // Aapka Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyD0AZG6D8H-OZOJK0s5sDyVJ6BLJJKVszc",
+            authDomain: "mir-free-rewards-log-and-earn.firebaseapp.com",
+            databaseURL: "https://mir-free-rewards-log-and-earn-default-rtdb.firebaseio.com",
+            projectId: "mir-free-rewards-log-and-earn",
+            storageBucket: "mir-free-rewards-log-and-earn.firebasestorage.app",
+            messagingSenderId: "1055267295995",
+            appId: "1:1055267295995:web:35ebcfaa35a650a832165e"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        // Login function
+        function login() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithRedirect(provider);
+        }
+
+        // Automatic Page Switch Logic
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // Agar user logged in hai toh App dikhao
+                document.getElementById('auth-page').classList.remove('active');
+                document.getElementById('main-app').classList.add('active');
+                
+                // Real-time coins update
+                db.ref('users/' + user.uid).on('value', (snap) => {
+                    const data = snap.val() || { coins: 0 };
+                    document.getElementById('coins').innerText = data.coins;
+                });
+            } else {
+                // Agar logout hai toh Login page dikhao
+                document.getElementById('auth-page').classList.add('active');
+                document.getElementById('main-app').classList.remove('active');
+            }
+        });
+
+        // Add Coins Function
+        function addCoins() {
+            const user = auth.currentUser;
+            if(user) {
+                db.ref('users/' + user.uid).transaction((currentData) => {
+                    if (currentData === null) {
+                        return { coins: 10 };
+                    } else {
+                        return { coins: (currentData.coins || 0) + 10 };
+                    }
+                });
+            }
+        }
+
+        // Logout Function
+        function logout() {
+            auth.signOut();
+        }
+    </script>
+</body>
+</html>
