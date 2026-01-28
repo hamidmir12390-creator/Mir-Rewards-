@@ -3,101 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mir Rewards Pro</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <title>MIR FREE REWARDS</title>
+    <script src="https://cdn.unityads.unity3d.com/sdk/4.0.0/unityads.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+
     <style>
-        body { font-family: sans-serif; text-align: center; background: #f0f2f5; margin: 0; padding: 20px; }
-        .page { display: none; padding: 20px; }
+        :root { --primary: #6200ee; --bg: #f5f5f5; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 70px; }
+        .header { background: var(--primary); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
+        .page { display: none; padding: 15px; }
         .active { display: block; }
-        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); margin-top: 20px; }
-        .btn { padding: 15px; width: 100%; border-radius: 12px; border: none; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s; }
-        .btn-google { background: white; border: 1px solid #ddd; color: #555; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-ad { background: #00c853; color: white; margin-top: 20px; }
-        .btn-logout { background: #ff5252; color: white; margin-top: 30px; width: auto; padding: 10px 20px; }
-        h1 { color: #333; }
-        #coins { font-size: 48px; color: #ffa000; }
+        .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn-watch { background: linear-gradient(45deg, #4CAF50, #8BC34A); color: white; padding: 20px; border-radius: 15px; text-align: center; font-weight: bold; font-size: 1.2rem; cursor: pointer; }
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; border-top: 1px solid #ddd; padding: 10px 0; }
+        .nav-item { font-size: 12px; color: #666; cursor: pointer; text-align: center; }
+        .popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #FFF9E6; padding: 25px; border-radius: 20px; box-shadow: 0 0 20px rgba(0,0,0,0.3); z-index: 1000; text-align: center; display: none; width: 80%; border: 2px solid #FFD700; }
+        .withdraw-btn { background: #6200ee; color: white; border: none; padding: 10px; border-radius: 5px; width: 100%; margin: 5px 0; }
     </style>
 </head>
 <body>
 
-    <div id="auth-page" class="page active">
-        <br><br>
-        <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" width="70">
-        <h1>Mir Rewards</h1>
-        <p>Login to start earning real rewards!</p>
-        <div class="card">
-            <button class="btn btn-g
+<div id="auth-screen" style="text-align: center; padding-top: 100px;">
+    <h2>MIR FREE REWARDS</h2>
+    <p>Sign in with Google to start earning!</p>
+    <button onclick="login()" style="padding: 15px 30px; border-radius: 25px; background: white; border: 1px solid #ddd;">Google Login</button>
+</div>
 
-    <div id="main-app" class="page">
-        <div class="card">
-            <p>Your Total Balance</p>
-            <h1><span id="coins">0</span> 🪙</h1>
-            <button class="btn btn-ad" onclick="addCoins()">WATCH AD (+10 Coins)</button>
+<div id="main-app" style="display:none;">
+    <div class="header">
+        <span id="user-display-id" style="font-size: 0.8rem;">ID: ...</span>
+        <div style="display: flex; gap: 10px;">
+            <span>💰 <b id="balance">0</b></span>
+            <span>🏆 <b id="score">0</b></span>
         </div>
-        <button class="btn btn-logout" onclick="logout()">Logout</button>
     </div>
 
-    <script>
-        // Aapka Firebase Config
-        const firebaseConfig = {
-            apiKey: "AIzaSyD0AZG6D8H-OZOJK0s5sDyVJ6BLJJKVszc",
-            authDomain: "mir-free-rewards-log-and-earn.firebaseapp.com",
-            databaseURL: "https://mir-free-rewards-log-and-earn-default-rtdb.firebaseio.com",
-            projectId: "mir-free-rewards-log-and-earn",
-            storageBucket: "mir-free-rewards-log-and-earn.firebasestorage.app",
-            messagingSenderId: "1055267295995",
-            appId: "1:1055267295995:web:35ebcfaa35a650a832165e"
-        };
+    <div id="page1" class="page active">
+        <div class="card" style="text-align: center; background: #e8e0ff;">
+            <h3>Welcome to MIR FREE REWARDS</h3>
+            <p>Har naye user ko 100 Coins bonus mil gaye hain!</p>
+        </div>
+        <div class="btn-watch" onclick="showAds()">WATCH AD & EARN</div>
+    </div>
 
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.database();
+    <div id="page2" class="page">
+        <div class="card">
+            <h3>Invite Friends</h3>
+            <p>Your Code: <b id="my-code" style="color: var(--primary);">...</b></p>
+            <p>150 Coins for you, 50 for them!</p>
+        </div>
+    </div>
 
-        // Login function
-        function login() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithRedirect(provider);
-        }
+    <div id="page3" class="page">
+        <h3>🏆 Leaderboard</h3>
+        <p style="color: #ff5722; font-size: 0.8rem;">30 Days After Reset</p>
+        <div id="leaderboard-list"></div>
+    </div>
 
-        // Automatic Page Switch Logic
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                // Agar user logged in hai toh App dikhao
-                document.getElementById('auth-page').classList.remove('active');
-                document.getElementById('main-app').classList.add('active');
-                
-                // Real-time coins update
-                db.ref('users/' + user.uid).on('value', (snap) => {
-                    const data = snap.val() || { coins: 0 };
-                    document.getElementById('coins').innerText = data.coins;
-                });
-            } else {
-                // Agar logout hai toh Login page dikhao
-                document.getElementById('auth-page').classList.add('active');
-                document.getElementById('main-app').classList.remove('active');
+    <div id="page4" class="page">
+        <h3>Withdraw</h3>
+        <div class="card">
+            <h4>Redeem Code</h4>
+            <button class="withdraw-btn">1500 = ₹10 RC</button>
+            <button class="withdraw-btn">4200 = ₹30 RC</button>
+        </div>
+        <div class="card">
+            <h4>UPI Bank</h4>
+            <button class="withdraw-btn">1800 = ₹10</button>
+            <button class="withdraw-btn">5000 = ₹30</button>
+        </div>
+    </div>
+
+    <div id="page5" class="page">
+        <h3>Account</h3>
+        <button onclick="logout()" style="margin-top: 20px; background: #ff5252; color: white; border: none; padding: 10px; width: 100%; border-radius: 5px;">Logout</button>
+    </div>
+
+    <nav class="nav-bar">
+        <div class="nav-item" onclick="showPage('page1')">🏠<br>Earn</div>
+        <div class="nav-item" onclick="showPage('page2')">👥<br>Refer</div>
+        <div class="nav-item" onclick="showPage('page3')">🏆<br>Ranks</div>
+        <div class="nav-item" onclick="showPage('page4')">💳<br>Cash</div>
+        <div class="nav-item" onclick="showPage('page5')">👤<br>User</div>
+    </nav>
+</div>
+
+<div id="reward-popup" class="popup">
+    <img src="https://img.icons8.com/emoji/96/000000/coin-emoji.png" width="80">
+    <h2>Congratulations!</h2>
+    <p>You Earned 10 Coins and 20 Leaderboard Score</p>
+    <button onclick="document.getElementById('reward-popup').style.display='none'" style="background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 20px;">OK</button>
+</div>
+
+<script>
+    // FIREBASE CONFIG (Updated from your screenshot)
+    const firebaseConfig = {
+        apiKey: "AIzaSyD0AZG6D8H-OZOJK0s5sDyVJ6BLJJKVszc",
+        authDomain: "mir-free-rewards-log-and-earn.firebaseapp.com",
+        databaseURL: "https://mir-free-rewards-log-and-earn-default-rtdb.firebaseio.com",
+        projectId: "mir-free-rewards-log-and-earn",
+        storageBucket: "mir-free-rewards-log-and-earn.firebasestorage.app",
+        messagingSenderId: "1055267295995",
+        appId: "1:1055267295995:web:35ebcfaa35a650a832165e",
+        measurementId: "G-V5CGH67MPE"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    // Unity Ads Init (ID: 6034324)
+    UnityAds.init("6034324", true);
+
+    function login() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider).then(res => handleUser(res.user)).catch(e => alert(e.message));
+    }
+
+    function handleUser(user) {
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+        const userRef = db.ref('users/' + user.uid);
+        userRef.once('value', snap => {
+            if(!snap.exists()) {
+                userRef.set({ id: user.uid.substring(0,6), coins: 100, score: 0, email: user.email, referCode: user.uid.substring(0,6).toUpperCase() });
+            }
+            sync(user.uid);
+        });
+    }
+
+    function showAds() {
+        UnityAds.show("Rewarded_Android", {
+            complete: () => {
+                updateBal(10, 20);
+                document.getElementById('reward-popup').style.display = 'block';
             }
         });
+    }
 
-        // Add Coins Function
-        function addCoins() {
-            const user = auth.currentUser;
-            if(user) {
-                db.ref('users/' + user.uid).transaction((currentData) => {
-                    if (currentData === null) {
-                        return { coins: 10 };
-                    } else {
-                        return { coins: (currentData.coins || 0) + 10 };
-                    }
-                });
-            }
-        }
+    function updateBal(c, s) {
+        db.ref('users/' + auth.currentUser.uid).transaction(d => { if(d){ d.coins += c; d.score += s; } return d; });
+    }
 
-        // Logout Function
-        function logout() {
-            auth.signOut();
-        }
-    </script>
+    function sync(uid) {
+        db.ref('users/' + uid).on('value', snap => {
+            const d = snap.val();
+            document.getElementById('balance').innerText = d.coins;
+            document.getElementById('score').innerText = d.score;
+            document.getElementById('user-display-id').innerText = "ID: " + d.id;
+            document.getElementById('my-code').innerText = d.referCode;
+        });
+    }
+
+    function showPage(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function logout() { auth.signOut().then(() => location.reload()); }
+</script>
 </body>
 </html>
