@@ -11,64 +11,63 @@
     <style>
         :root { --primary: #6200ee; --bg: #f5f5f5; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 70px; }
-        .header { background: var(--primary); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .header { background: var(--primary); color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
         .page { display: none; padding: 15px; }
         .active { display: block; }
         .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
         .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; border-top: 1px solid #ddd; padding: 10px 0; }
-        .nav-item { font-size: 12px; color: #666; cursor: pointer; text-align: center; flex: 1; }
-        .leaderboard-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; }
-        .top-3 { font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 10px; }
+        .nav-item { font-size: 11px; color: #666; cursor: pointer; text-align: center; flex: 1; }
+        #bonus-popup { background: #fff9c4; border: 2px dashed #fbc02d; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 15px; display: none; }
+        .leaderboard-row { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
 
 <div id="auth-screen" style="text-align: center; padding-top: 100px;">
     <h1>MIR FREE REWARDS</h1>
-    <p>Login to start earning!</p>
-    <button onclick="login()" class="btn" style="width: 200px;">Google Login</button>
+    <button onclick="login()" class="btn" style="width: 220px;">Google Login</button>
 </div>
 
 <div id="main-app" style="display:none;">
     <div class="header">
         <span id="user-display-id">ID: ...</span>
-        <div>💰 <b id="balance">0</b> | 🏆 <b id="score-display">0</b></div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div onclick="showPage('page6')" style="cursor:pointer; font-size: 1.4rem;">✉️</div>
+            <div>💰 <b id="balance">0</b> | 🏆 <b id="score-display">0</b></div>
+        </div>
     </div>
 
     <div id="page1" class="page active">
+        <div id="bonus-popup">🎁 <b>100 Coins Bonus!</b><br>Yeh offer sirf 1 minute tak hai!</div>
         <div class="card" style="text-align: center;">
-            <h2>Welcome to MIR FREE REWARDS</h2>
-            <p>Har naye user ko 100 Coins bonus mil gaye hain!</p>
-            <button class="btn" onclick="showAds()" style="background: #4CAF50; font-size: 1.2rem;">WATCH AD & EARN</button>
+            <button class="btn" onclick="showAds()" style="background: #4CAF50; height: 60px;">WATCH AD & EARN</button>
         </div>
     </div>
 
     <div id="page2" class="page">
-        <div class="card">
+        <div class="card" style="text-align: center;">
             <h3>Invite Friends</h3>
             <p>Your Code: <b id="my-code" style="color:red; font-size: 1.5rem;">...</b></p>
-            <p>150 Coins for you, 50 for them!</p>
-            <button class="btn" onclick="shareReferral()">Share Referral Link</button>
+            <button class="btn" onclick="shareLink()">Share Referral Link</button>
         </div>
         <div id="refer-input-card" class="card">
-            <h4>Enter Referral Code</h4>
+            <h4>Enter Friend's Code</h4>
             <input type="text" id="input-code" placeholder="Enter code" style="width:90%; padding:10px;">
-            <button class="btn" onclick="applyReferral()">Apply Code</button>
+            <button class="btn" onclick="applyRefer()">Apply (Get 50 Coins)</button>
         </div>
     </div>
 
     <div id="page3" class="page">
         <div class="card">
-            <h3>🏆 Leaderboard</h3>
-            <p style="color: gray;">30 Days After Reset</p>
+            <h3 style="text-align: center;">🏆 Leaderboard (30 Days)</h3>
             <div id="leaderboard-list">Loading...</div>
         </div>
     </div>
 
     <div id="page4" class="page">
         <div class="card">
-            <h4>Play Store Redeem Code</h4>
+            <h4>Redeem Code</h4>
             <button class="btn" onclick="withdraw('RC', 1500, 10)">1500 = ₹10 RC</button>
             <button class="btn" onclick="withdraw('RC', 4200, 30)">4200 = ₹30 RC</button>
             <button class="btn" onclick="withdraw('RC', 6500, 50)">6500 = ₹50 RC</button>
@@ -83,10 +82,10 @@
         </div>
     </div>
 
-    <div id="page5" class="page">
+    <div id="page6" class="page">
         <div class="card">
-            <h3>Account Settings</h3>
-            <button class="btn" style="background: #f44336;" onclick="auth.signOut().then(()=>location.reload())">Logout</button>
+            <h3>📬 Mailbox</h3>
+            <div id="admin-msg" style="background:#f9f9f9; padding:15px; border-left:4px solid purple;">No messages.</div>
         </div>
     </div>
 
@@ -94,13 +93,11 @@
         <div class="nav-item" onclick="showPage('page1')">Earn</div>
         <div class="nav-item" onclick="showPage('page2')">Refer</div>
         <div class="nav-item" onclick="showPage('page3')">Trophy</div>
-        <div class="nav-item" onclick="showPage('page4')">Withdraw</div>
-        <div class="nav-item" onclick="showPage('page5')">Account</div>
+        <div class="nav-item" onclick="showPage('page4')">Cash</div>
     </nav>
 </div>
 
 <script>
-    // Config
     const firebaseConfig = {
         apiKey: "AIzaSyD0AZG6D8H-OZOJK0s5sDyVJ6BLJJKVszc",
         authDomain: "mir-free-rewards-log-and-earn.firebaseapp.com",
@@ -114,40 +111,37 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // Unity Ads Init
-    UnityAds.init("6034324", true);
-
     function login() {
         const provider = new firebase.auth.GoogleAuthProvider();
         auth.signInWithPopup(provider).then(res => {
             const user = res.user;
-            const userRef = db.ref('users/' + user.uid);
-            userRef.once('value', snap => {
-                if (!snap.exists()) {
-                    userRef.set({
+            db.ref('users/' + user.uid).once('value', snap => {
+                if(!snap.exists()) {
+                    db.ref('users/' + user.uid).set({
                         id: user.uid.substring(0,6),
-                        coins: 100,
-                        score: 0,
-                        email: user.email,
+                        coins: 100, score: 0,
                         referCode: user.uid.substring(0,6).toUpperCase(),
-                        usedRefer: false
+                        usedRefer: false,
+                        message: "Welcome! Your rewards will appear here."
                     });
+                    document.getElementById('bonus-popup').style.display = 'block';
+                    setTimeout(() => { document.getElementById('bonus-popup').style.display = 'none'; }, 60000);
                 }
                 startApp(user.uid);
             });
-        }).catch(err => alert("Login Error: " + err.message));
+        });
     }
 
     function startApp(uid) {
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('main-app').style.display = 'block';
-        
         db.ref('users/' + uid).on('value', snap => {
             const d = snap.val();
             document.getElementById('balance').innerText = d.coins;
             document.getElementById('score-display').innerText = d.score;
             document.getElementById('user-display-id').innerText = "ID: " + d.id;
             document.getElementById('my-code').innerText = d.referCode;
+            document.getElementById('admin-msg').innerText = d.message;
             if(d.usedRefer) document.getElementById('refer-input-card').style.display = 'none';
         });
         updateLeaderboard();
@@ -156,69 +150,53 @@
     function showAds() {
         UnityAds.show("Rewarded_Android", {
             complete: () => {
-                const uid = auth.currentUser.uid;
-                db.ref('users/' + uid).transaction(u => {
+                db.ref('users/' + auth.currentUser.uid).transaction(u => {
                     if(u) { u.coins += 10; u.score += 20; }
                     return u;
                 });
-                alert("Congratulations! Earned 10 coins & 20 score.");
+                alert("Earned 10 Coins & 20 Score!");
             }
         });
     }
 
-    function applyReferral() {
+    function applyRefer() {
         const code = document.getElementById('input-code').value.toUpperCase();
         const uid = auth.currentUser.uid;
         db.ref('users').orderByChild('referCode').equalTo(code).once('value', snap => {
             if(snap.exists()) {
-                let refererUid;
-                snap.forEach(c => refererUid = c.key);
-                if(refererUid === uid) return alert("Apna code nahi chalega!");
-                
-                db.ref('users/' + refererUid).transaction(u => { if(u){u.coins += 150; u.score += 150;} return u; });
+                let rUid; snap.forEach(c => rUid = c.key);
+                if(rUid === uid) return alert("Self refer not allowed!");
+                db.ref('users/' + rUid).transaction(u => { if(u){u.coins += 150; u.score += 150;} return u; });
                 db.ref('users/' + uid).transaction(u => { if(u){u.coins += 50; u.score += 50; u.usedRefer = true;} return u; });
-                alert("Success! 50 coins added.");
-            } else alert("Galat code!");
+                alert("Referral Applied! +50 Coins.");
+            } else alert("Invalid Code!");
         });
     }
 
-    function shareReferral() {
-        const code = document.getElementById('my-code').innerText;
-        const text = `Join MIR REWARDS! Use my code ${code} to get 50 bonus coins: ${window.location.href}`;
-        if (navigator.share) {
-            navigator.share({ title: 'MIR REWARDS', text: text, url: window.location.href });
-        } else {
-            prompt("Copy this link:", text);
-        }
-    }
-
-    function updateLeaderboard() {
-        db.ref('users').orderByChild('score').limitToLast(10).on('value', snap => {
-            let html = "";
-            let users = [];
-            snap.forEach(u => users.push(u.val()));
-            users.reverse().forEach((u, i) => {
-                let prize = "";
-                if(i==0) prize = " (Prize: ₹30 RC)";
-                if(i==1) prize = " (Prize: ₹20 RC)";
-                if(i==2) prize = " (Prize: ₹10 RC)";
-                html += `<div class="leaderboard-row"><span>${i+1}. ${u.id}</span> <b>${u.score} ${prize}</b></div>`;
-            });
-            document.getElementById('leaderboard-list').innerHTML = html;
-        });
+    function shareLink() {
+        const msg = `Join MIR REWARDS! Use my code ${document.getElementById('my-code').innerText} and get 50 bonus coins: ${window.location.href}`;
+        navigator.share ? navigator.share({text: msg}) : prompt("Copy Link:", msg);
     }
 
     function withdraw(type, coins, rs) {
         const uid = auth.currentUser.uid;
         db.ref('users/' + uid).once('value', snap => {
-            const bal = snap.val().coins;
-            if(bal >= coins) {
-                db.ref('withdraw_requests').push({
-                    uid: uid, email: auth.currentUser.email, amount: coins, val: rs, type: type, date: new Date().toLocaleString()
-                });
-                db.ref('users/' + uid + '/coins').set(bal - coins);
-                alert("Request Sent! Firebase mein update ho gaya.");
-            } else alert("Coins kam hain!");
+            if(snap.val().coins >= coins) {
+                db.ref('withdraw_requests').push({ uid: uid, email: auth.currentUser.email, amount: rs, type: type });
+                db.ref('users/' + uid + '/coins').set(snap.val().coins - coins);
+                alert("Withdraw Request Sent!");
+            } else alert("Not enough coins!");
+        });
+    }
+
+    function updateLeaderboard() {
+        db.ref('users').orderByChild('score').limitToLast(10).on('value', snap => {
+            let html = ""; let users = []; snap.forEach(u => users.push(u.val()));
+            users.reverse().forEach((u, i) => {
+                let prize = i < 3 ? `(Win: ₹${30-(i*10)} RC)` : "";
+                html += `<div class="leaderboard-row"><span>${i+1}. ${u.id}</span> <b>${u.score} ${prize}</b></div>`;
+            });
+            document.getElementById('leaderboard-list').innerHTML = html;
         });
     }
 
@@ -226,6 +204,8 @@
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(id).classList.add('active');
     }
+
+    UnityAds.init("6034324", true);
 </script>
 </body>
 </html>
