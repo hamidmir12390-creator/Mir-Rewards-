@@ -4,208 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MIR FREE REWARDS</title>
-    <script src="https://cdn.unityads.unity3d.com/sdk/4.9.2/unityads.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
     <style>
-        :root { --primary: #6200ee; --bg: #f5f5f5; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 70px; }
-        .header { background: var(--primary); color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .page { display: none; padding: 15px; }
-        .active { display: block; }
-        .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; border-top: 1px solid #ddd; padding: 10px 0; }
-        .nav-item { font-size: 11px; color: #666; cursor: pointer; text-align: center; flex: 1; }
-        #bonus-popup { background: #fff9c4; border: 2px dashed #fbc02d; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 15px; display: none; }
-        .leaderboard-row { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #eee; }
+        body { margin: 0; background-color: #0b0d0f; color: white; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        #splash-screen { position: absolute; width: 100%; height: 100%; background: radial-gradient(circle, #1a1c1e, #000); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; transition: 0.8s; }
+        .truck-logo { width: 280px; border-radius: 15px; box-shadow: 0 0 25px rgba(0, 251, 255, 0.4); animation: pulse 2s infinite; }
+        #login-screen { display: none; text-align: center; animation: fadeIn 1s; padding: 20px; }
+        .btn-google { background: white; color: #444; border: none; padding: 14px 28px; font-size: 18px; font-weight: 600; border-radius: 50px; cursor: pointer; display: inline-flex; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); margin-top: 30px; transition: 0.3s; }
+        .btn-google img { width: 24px; margin-right: 15px; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<div id="auth-screen" style="text-align: center; padding-top: 100px;">
-    <h1>MIR FREE REWARDS</h1>
-    <button onclick="login()" class="btn" style="width: 220px;">Google Login</button>
-</div>
-
-<div id="main-app" style="display:none;">
-    <div class="header">
-        <span id="user-display-id">ID: ...</span>
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <div onclick="showPage('page6')" style="cursor:pointer; font-size: 1.4rem;">✉️</div>
-            <div>💰 <b id="balance">0</b> | 🏆 <b id="score-display">0</b></div>
-        </div>
+    <div id="splash-screen">
+        <img src="https://i.ibb.co/LhyYmPB/1000064821.jpg" alt="Mir Truck" class="truck-logo">
+        <h1 style="color: #00fbff; margin-top: 20px; letter-spacing: 2px;">MIR FREE REWARDS 💎</h1>
     </div>
 
-    <div id="page1" class="page active">
-        <div id="bonus-popup">🎁 <b>100 Coins Bonus!</b><br>Yeh offer sirf 1 minute tak hai!</div>
-        <div class="card" style="text-align: center;">
-            <button class="btn" onclick="showAds()" style="background: #4CAF50; height: 60px;">WATCH AD & EARN</button>
-        </div>
+    <div id="login-screen">
+        <h1 style="font-size: 32px;">Welcome Back!</h1>
+        <p style="color: #aaa;">Login with Google to start earning Blue Diamonds.</p>
+        <button class="btn-google" onclick="signInWithGoogle()">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" alt="G">
+            Sign in with Google
+        </button>
     </div>
 
-    <div id="page2" class="page">
-        <div class="card" style="text-align: center;">
-            <h3>Invite Friends</h3>
-            <p>Your Code: <b id="my-code" style="color:red; font-size: 1.5rem;">...</b></p>
-            <button class="btn" onclick="shareLink()">Share Referral Link</button>
-        </div>
-        <div id="refer-input-card" class="card">
-            <h4>Enter Friend's Code</h4>
-            <input type="text" id="input-code" placeholder="Enter code" style="width:90%; padding:10px;">
-            <button class="btn" onclick="applyRefer()">Apply (Get 50 Coins)</button>
-        </div>
-    </div>
+    <script>
+        // --- Aapka Firebase Config ---
+        const firebaseConfig = {
+          apiKey: "AIzaSyD0AZG6D8H-OZOJK0s5sDyVJ6BLJJKVszc",
+          authDomain: "mir-free-rewards-log-and-earn.firebaseapp.com",
+          databaseURL: "https://mir-free-rewards-log-and-earn-default-rtdb.firebaseio.com",
+          projectId: "mir-free-rewards-log-and-earn",
+          storageBucket: "mir-free-rewards-log-and-earn.firebasestorage.app",
+          messagingSenderId: "1055267295995",
+          appId: "1:1055267295995:web:35ebcfaa35a650a832165e",
+          measurementId: "G-V5CGH67MPE"
+        };
 
-    <div id="page3" class="page">
-        <div class="card">
-            <h3 style="text-align: center;">🏆 Leaderboard (30 Days)</h3>
-            <div id="leaderboard-list">Loading...</div>
-        </div>
-    </div>
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
 
-    <div id="page4" class="page">
-        <div class="card">
-            <h4>Redeem Code</h4>
-            <button class="btn" onclick="withdraw('RC', 1500, 10)">1500 = ₹10 RC</button>
-            <button class="btn" onclick="withdraw('RC', 4200, 30)">4200 = ₹30 RC</button>
-            <button class="btn" onclick="withdraw('RC', 6500, 50)">6500 = ₹50 RC</button>
-            <button class="btn" onclick="withdraw('RC', 11000, 100)">11000 = ₹100 RC</button>
-        </div>
-        <div class="card">
-            <h4>UPI Bank</h4>
-            <button class="btn" onclick="withdraw('UPI', 1800, 10)">1800 = ₹10</button>
-            <button class="btn" onclick="withdraw('UPI', 5000, 30)">5000 = ₹30</button>
-            <button class="btn" onclick="withdraw('UPI', 7500, 50)">7500 = ₹50</button>
-            <button class="btn" onclick="withdraw('UPI', 13000, 100)">13000 = ₹100</button>
-        </div>
-    </div>
+        // Splash timing
+        setTimeout(() => {
+            const splash = document.getElementById('splash-screen');
+            splash.style.opacity = '0';
+            setTimeout(() => {
+                splash.style.display = 'none';
+                document.getElementById('login-screen').style.display = 'block';
+            }, 800);
+        }, 3500);
 
-    <div id="page6" class="page">
-        <div class="card">
-            <h3>📬 Mailbox</h3>
-            <div id="admin-msg" style="background:#f9f9f9; padding:15px; border-left:4px solid purple;">No messages.</div>
-        </div>
-    </div>
-
-    <nav class="nav-bar">
-        <div class="nav-item" onclick="showPage('page1')">Earn</div>
-        <div class="nav-item" onclick="showPage('page2')">Refer</div>
-        <div class="nav-item" onclick="showPage('page3')">Trophy</div>
-        <div class="nav-item" onclick="showPage('page4')">Cash</div>
-    </nav>
-</div>
-
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyD0AZG6D8H-OZOJK0s5sDyVJ6BLJJKVszc",
-        authDomain: "mir-free-rewards-log-and-earn.firebaseapp.com",
-        databaseURL: "https://mir-free-rewards-log-and-earn-default-rtdb.firebaseio.com",
-        projectId: "mir-free-rewards-log-and-earn",
-        storageBucket: "mir-free-rewards-log-and-earn.firebasestorage.app",
-        messagingSenderId: "1055267295995",
-        appId: "1:1055267295995:web:35ebcfaa35a650a832165e"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
-
-    function login() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).then(res => {
-            const user = res.user;
-            db.ref('users/' + user.uid).once('value', snap => {
-                if(!snap.exists()) {
-                    db.ref('users/' + user.uid).set({
-                        id: user.uid.substring(0,6),
-                        coins: 100, score: 0,
-                        referCode: user.uid.substring(0,6).toUpperCase(),
-                        usedRefer: false,
-                        message: "Welcome! Your rewards will appear here."
-                    });
-                    document.getElementById('bonus-popup').style.display = 'block';
-                    setTimeout(() => { document.getElementById('bonus-popup').style.display = 'none'; }, 60000);
-                }
-                startApp(user.uid);
+        // Google Login Function
+        function signInWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).then((result) => {
+                alert("Namaste " + result.user.displayName + "! Login Successful.");
+                // Agle step mein hum yahan dashboard ka link denge
+            }).catch((error) => {
+                console.error(error);
+                alert("Galti hui: " + error.message);
             });
-        });
-    }
-
-    function startApp(uid) {
-        document.getElementById('auth-screen').style.display = 'none';
-        document.getElementById('main-app').style.display = 'block';
-        db.ref('users/' + uid).on('value', snap => {
-            const d = snap.val();
-            document.getElementById('balance').innerText = d.coins;
-            document.getElementById('score-display').innerText = d.score;
-            document.getElementById('user-display-id').innerText = "ID: " + d.id;
-            document.getElementById('my-code').innerText = d.referCode;
-            document.getElementById('admin-msg').innerText = d.message;
-            if(d.usedRefer) document.getElementById('refer-input-card').style.display = 'none';
-        });
-        updateLeaderboard();
-    }
-
-    function showAds() {
-        UnityAds.show("Rewarded_Android", {
-            complete: () => {
-                db.ref('users/' + auth.currentUser.uid).transaction(u => {
-                    if(u) { u.coins += 10; u.score += 20; }
-                    return u;
-                });
-                alert("Earned 10 Coins & 20 Score!");
-            }
-        });
-    }
-
-    function applyRefer() {
-        const code = document.getElementById('input-code').value.toUpperCase();
-        const uid = auth.currentUser.uid;
-        db.ref('users').orderByChild('referCode').equalTo(code).once('value', snap => {
-            if(snap.exists()) {
-                let rUid; snap.forEach(c => rUid = c.key);
-                if(rUid === uid) return alert("Self refer not allowed!");
-                db.ref('users/' + rUid).transaction(u => { if(u){u.coins += 150; u.score += 150;} return u; });
-                db.ref('users/' + uid).transaction(u => { if(u){u.coins += 50; u.score += 50; u.usedRefer = true;} return u; });
-                alert("Referral Applied! +50 Coins.");
-            } else alert("Invalid Code!");
-        });
-    }
-
-    function shareLink() {
-        const msg = `Join MIR REWARDS! Use my code ${document.getElementById('my-code').innerText} and get 50 bonus coins: ${window.location.href}`;
-        navigator.share ? navigator.share({text: msg}) : prompt("Copy Link:", msg);
-    }
-
-    function withdraw(type, coins, rs) {
-        const uid = auth.currentUser.uid;
-        db.ref('users/' + uid).once('value', snap => {
-            if(snap.val().coins >= coins) {
-                db.ref('withdraw_requests').push({ uid: uid, email: auth.currentUser.email, amount: rs, type: type });
-                db.ref('users/' + uid + '/coins').set(snap.val().coins - coins);
-                alert("Withdraw Request Sent!");
-            } else alert("Not enough coins!");
-        });
-    }
-
-    function updateLeaderboard() {
-        db.ref('users').orderByChild('score').limitToLast(10).on('value', snap => {
-            let html = ""; let users = []; snap.forEach(u => users.push(u.val()));
-            users.reverse().forEach((u, i) => {
-                let prize = i < 3 ? `(Win: ₹${30-(i*10)} RC)` : "";
-                html += `<div class="leaderboard-row"><span>${i+1}. ${u.id}</span> <b>${u.score} ${prize}</b></div>`;
-            });
-            document.getElementById('leaderboard-list').innerHTML = html;
-        });
-    }
-
-    function showPage(id) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-    }
-
-    UnityAds.init("6034324", true);
-</script>
+        }
+    </script>
 </body>
 </html>
