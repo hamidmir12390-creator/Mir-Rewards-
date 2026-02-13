@@ -10,33 +10,42 @@
 
     <style>
         body { margin: 0; background-color: #0b0d0f; color: white; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        #splash-screen { position: absolute; width: 100%; height: 100%; background: radial-gradient(circle, #1a1c1e, #000); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; transition: 0.8s; }
-        .truck-logo { width: 280px; border-radius: 15px; box-shadow: 0 0 25px rgba(0, 251, 255, 0.4); animation: pulse 2s infinite; }
+        #splash-screen { position: absolute; width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; transition: 0.8s; }
+        
+        /* Truck Image Styling */
+        .truck-logo { 
+            width: 250px; 
+            border-radius: 15px; 
+            box-shadow: 0 0 20px rgba(0, 251, 255, 0.5);
+            border: 2px solid #00fbff;
+        }
+
         #login-screen { display: none; text-align: center; animation: fadeIn 1s; padding: 20px; }
-        .btn-google { background: white; color: #444; border: none; padding: 14px 28px; font-size: 18px; font-weight: 600; border-radius: 50px; cursor: pointer; display: inline-flex; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); margin-top: 30px; transition: 0.3s; }
+        .btn-google { background: white; color: #444; border: none; padding: 14px 28px; font-size: 18px; font-weight: 600; border-radius: 50px; cursor: pointer; display: inline-flex; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); margin-top: 30px; }
         .btn-google img { width: 24px; margin-right: 15px; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
     <div id="splash-screen">
-        <img src="https://i.ibb.co/LhyYmPB/1000064821.jpg" alt="Mir Truck" class="truck-logo">
-        <h1 style="color: #00fbff; margin-top: 20px; letter-spacing: 2px;">MIR FREE REWARDS 💎</h1>
+        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhoXvV6V-P0w8S6R5yR0Z3Z4W6G1H5I6J7K8L9M0N1O2P3Q4R5S6T7U8V9W0X1Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R1S2T3U4V5W6X7Y8Z9/s1600/truck.png" 
+             onerror="this.src='https://raw.githubusercontent.com/hamidmir12390-creator/Mir-Rewards-/main/1000064821.png'"
+             class="truck-logo">
+        <h1 style="color: #00fbff; margin-top: 20px;">MIR FREE REWARDS 💎</h1>
     </div>
 
     <div id="login-screen">
         <h1 style="font-size: 32px;">Welcome Back!</h1>
-        <p style="color: #aaa;">Login with Google to start earning Blue Diamonds.</p>
-        <button class="btn-google" onclick="signInWithGoogle()">
+        <p style="color: #aaa;">Login with Google to start earning.</p>
+        <button class="btn-google" id="loginBtn" onclick="signInWithGoogle()">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" alt="G">
             Sign in with Google
         </button>
     </div>
 
     <script>
-        // --- Aapka Firebase Config ---
         const firebaseConfig = {
           apiKey: "AIzaSyD0AZG6D8H-OZOJK0s5sDyVJ6BLJJKVszc",
           authDomain: "mir-free-rewards-log-and-earn.firebaseapp.com",
@@ -53,23 +62,27 @@
 
         // Splash timing
         setTimeout(() => {
-            const splash = document.getElementById('splash-screen');
-            splash.style.opacity = '0';
+            document.getElementById('splash-screen').style.opacity = '0';
             setTimeout(() => {
-                splash.style.display = 'none';
+                document.getElementById('splash-screen').style.display = 'none';
                 document.getElementById('login-screen').style.display = 'block';
             }, 800);
         }, 3500);
 
-        // Google Login Function
+        // Fixed Google Login Function
+        let isLoggingIn = false;
         function signInWithGoogle() {
+            if(isLoggingIn) return; // Do-teen baar click hone se rokega
+            isLoggingIn = true;
+            
             const provider = new firebase.auth.GoogleAuthProvider();
             auth.signInWithPopup(provider).then((result) => {
-                alert("Namaste " + result.user.displayName + "! Login Successful.");
-                // Agle step mein hum yahan dashboard ka link denge
+                alert("Login Success: " + result.user.displayName);
+                isLoggingIn = false;
             }).catch((error) => {
                 console.error(error);
-                alert("Galti hui: " + error.message);
+                alert("Login Error: " + error.message);
+                isLoggingIn = false;
             });
         }
     </script>
