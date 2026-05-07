@@ -3,65 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIR REWARDS - DASHBOARD</title>
+    <title>Dashboard - MIR REWARDS</title>
     <style>
-        body { margin: 0; background: #000; color: white; font-family: 'Arial', sans-serif; }
-        .header { background: #111; padding: 15px; border-bottom: 2px solid #00fbff; display: flex; justify-content: space-between; }
+        body { margin: 0; background: #0b0d0f; color: white; font-family: sans-serif; text-align: center; }
+        .header { background: #111; padding: 15px; border-bottom: 2px solid #00fbff; display: flex; justify-content: space-between; align-items: center; }
+        .stats { display: flex; justify-content: space-around; background: #1a1c1e; margin: 10px; padding: 15px; border-radius: 10px; border: 1px solid #333; }
         
-        /* Stats Table */
-        .stats-container { display: flex; justify-content: space-around; background: #1a1a1a; margin: 10px; padding: 15px; border-radius: 10px; border: 1px solid #00fbff; }
-        .stat-item { text-align: center; }
-        .stat-val { font-size: 22px; color: #00fbff; font-weight: bold; }
+        /* 1. CLAIM BOX ON TOP */
+        .top-claim { background: #1c1f24; margin: 15px; padding: 15px; border-radius: 12px; border-left: 6px solid #ffcc00; display: flex; justify-content: space-between; align-items: center; }
+        .btn-claim { background: #ffcc00; color: black; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; }
 
-        /* CLAIM BOX - TOP PRIORITY */
-        .claim-section { background: #222; margin: 15px; padding: 20px; border-radius: 15px; border-left: 8px solid #ffcc00; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(255, 204, 0, 0.2); }
-        .claim-btn { background: #ffcc00; color: #000; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-
-        /* SPIN BOX - SEPARATE */
-        .spin-container { background: #111; margin: 15px; padding: 25px; border-radius: 20px; border: 1px solid #333; }
-        .wheel-box { width: 220px; height: 220px; margin: 0 auto; border-radius: 50%; border: 5px solid #00fbff; display: flex; align-items: center; justify-content: center; font-size: 50px; transition: 4s cubic-bezier(0.1, 0, 0.2, 1); background: radial-gradient(circle, #222, #000); }
-        .spin-trigger { background: #00fbff; color: #000; border: none; padding: 15px 45px; border-radius: 50px; font-weight: bold; margin-top: 20px; font-size: 18px; width: 100%; }
-
-        /* Popup */
-        #popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
-        .popup-box { background: #fff; color: #000; padding: 30px; border-radius: 20px; width: 80%; text-align: center; }
+        /* 2. SPIN BOX SEPARATE */
+        .spin-section { background: #111; margin: 20px 15px; padding: 25px; border-radius: 20px; border: 1px solid #00fbff; }
+        .wheel { width: 220px; height: 220px; margin: 0 auto; border-radius: 50%; border: 5px solid #00fbff; transition: 4s cubic-bezier(0.1, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; font-size: 50px; background: #222; }
+        .btn-spin { background: #00fbff; color: black; border: none; padding: 15px 40px; border-radius: 50px; font-weight: bold; margin-top: 20px; width: 100%; font-size: 18px; }
+        
+        #pop { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
+        .pop-box { background: #fff; color: #000; padding: 30px; border-radius: 20px; width: 80%; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <span id="uName">Mir Hamid</span>
-        <span style="color:#00fbff">MIR REWARDS</span>
+        <span id="nameDisplay">Mir Hamid</span>
+        <span style="color:#00fbff; font-weight:bold;">MIR REWARDS</span>
     </div>
 
-    <div class="stats-container">
-        <div class="stat-item"><div class="stat-val">💎 <span id="dbBal">0</span></div><small>Diamonds</small></div>
-        <div class="stat-item"><div class="stat-val">🎟️ <span id="dbVch">0</span></div><small>Vouchers</small></div>
+    <div class="stats">
+        <div><div style="font-size:22px; color:#00fbff;">💎 <span id="bal">0</span></div><small>Diamonds</small></div>
+        <div><div style="font-size:22px; color:#00fbff;">🎟️ <span id="vch">0</span></div><small>Vouchers</small></div>
     </div>
 
-    <div class="claim-section">
+    <div class="top-claim">
         <div style="text-align:left">
-            <b style="font-size:20px; color:#ffcc00;">Daily Reward</b><br>
-            <span style="font-size:14px;">10 Diamonds & 20 Points</span>
+            <b style="font-size:18px;">Daily 10 Diamonds</b><br>
+            <span style="color:#aaa; font-size:12px;">+20 Leaderboard Points</span>
         </div>
-        <button class="claim-btn" onclick="claimDaily()">CLAIM</button>
+        <button class="btn-claim" onclick="claimDaily()">CLAIM</button>
     </div>
 
-    <div class="spin-container">
-        <h3 style="margin-top:0; color:#00fbff;">LUCKY SPIN</h3>
-        <div id="wheel" class="wheel-box">🎡</div>
-        <button class="spin-trigger" onclick="handleSpin()">SPIN NOW</button>
-        <p style="margin-top:10px; font-size:13px; color:#aaa;">Spins Left: <span id="spLimit">30</span>/30</p>
-        <button onclick="buyVoucher()" style="background:none; border:1px solid #555; color:#ccc; padding:8px 20px; border-radius:5px; width:100%;">Buy Voucher (5 💎)</button>
+    <div class="spin-section">
+        <h3 style="margin-top:0; color:#ffcc00;">LUCKY SPIN</h3>
+        <div id="wheel" class="wheel">🎡</div>
+        <button class="btn-spin" onclick="startSpin()">SPIN NOW</button>
+        <p style="font-size:12px; margin-top:10px;">Left: <span id="limit">30</span>/30</p>
+        <button onclick="buyVch()" style="background:none; border:1px solid #444; color:#aaa; padding:8px; border-radius:5px; width:100%;">Buy Voucher (5 💎)</button>
     </div>
 
-    <div id="popup">
-        <div class="popup-box">
-            <h2 id="popT">Success!</h2>
-            <p id="popM"></p>
-            <button onclick="document.getElementById('popup').style.display='none'" style="background:#00fbff; border:none; padding:10px 40px; border-radius:10px; font-weight:bold;">OK</button>
-        </div>
-    </div>
+    <div id="pop"><div class="pop-box"><h2 id="pT"></h2><p id="pM"></p><button onclick="document.getElementById('pop').style.display='none'" style="background:#00fbff; border:none; padding:10px 40px; border-radius:10px; font-weight:bold;">OK</button></div></div>
 
     <script>
         let d = parseInt(localStorage.getItem("uBal")) || 0;
@@ -69,44 +58,38 @@
         let s = parseInt(localStorage.getItem("uSpins")) ?? 30;
 
         function refresh() {
-            document.getElementById('dbBal').innerText = d;
-            document.getElementById('dbVch').innerText = v;
-            document.getElementById('spLimit').innerText = s;
-            localStorage.setItem("uBal", d);
-            localStorage.setItem("uVch", v);
-            localStorage.setItem("uSpins", s);
+            document.getElementById('bal').innerText = d;
+            document.getElementById('vch').innerText = v;
+            document.getElementById('limit').innerText = s;
+            localStorage.setItem("uBal", d); localStorage.setItem("uVch", v); localStorage.setItem("uSpins", s);
         }
         refresh();
 
         function claimDaily() {
             d += 10; refresh();
-            showPopup("Claimed!", "Added 10 Diamonds & 20 Leaderboard Points!");
+            showPop("Claimed!", "Got 10 Diamonds & 20 Points!");
         }
 
-        function buyVoucher() {
-            if(d >= 5) { d -= 5; v += 1; refresh(); } 
-            else { alert("Need 5 Diamonds!"); }
+        function buyVch() {
+            if(d >= 5) { d -= 5; v += 1; refresh(); } else { alert("Need 5 Diamonds!"); }
         }
 
-        function handleSpin() {
-            if(v <= 0) return alert("Buy a Voucher first!");
-            if(s <= 0) return alert("Daily limit reached!");
-
+        function startSpin() {
+            if(v <= 0) return alert("Need Voucher!");
+            if(s <= 0) return alert("Daily Limit Reached!");
             v -= 1; s -= 1; refresh();
-            let deg = Math.floor(Math.random() * 3600) + 360;
-            document.getElementById('wheel').style.transform = `rotate(${deg}deg)`;
-
+            document.getElementById('wheel').style.transform = `rotate(${Math.floor(Math.random()*3600)+360}deg)`;
             setTimeout(() => {
                 let prize = (Math.random() < 0.05) ? 10 : 5;
                 d += prize; refresh();
-                showPopup("Winner!", "You won " + prize + " Diamonds!");
+                showPop("Winner!", "You won " + prize + " Diamonds!");
             }, 4000);
         }
 
-        function showPopup(t, m) {
-            document.getElementById('popT').innerText = t;
-            document.getElementById('popM').innerText = m;
-            document.getElementById('popup').style.display = 'flex';
+        function showPop(t, m) {
+            document.getElementById('pT').innerText = t;
+            document.getElementById('pM').innerText = m;
+            document.getElementById('pop').style.display = 'flex';
         }
     </script>
 </body>
